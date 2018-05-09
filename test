@@ -1,0 +1,119 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Aug 22 13:48:31 2017
+
+@author: bingfei
+"""
+
+import cv2
+import numpy as np
+import csv
+from matching_csv import Matching
+
+obj=[0,0]
+
+color=[(255,0,0),(0,255,0),(0,0,255)]
+
+matching=[(0,0),(1,1)]
+
+for index in range(2150,2300):
+    
+    print index
+    
+    path='/Users/bingfei/project/Matching/Fairbank/'
+    #img1 = cv2.imread(path+'image/1/'+str(index)+'.jpg')
+    img2 = cv2.imread(path+'image/2/'+str(index)+'.jpg')
+    img3 = cv2.imread(path+'image/3/'+str(index)+'.jpg')
+
+    #bbx_1=[]
+    bbx_2=[]
+    bbx_3=[]
+    
+    #label_1=[]
+    label_2=[]
+    label_3=[]
+
+    '''with open(path+'Tracking/1/annotations.csv') as f:
+        bbx = csv.DictReader(f)
+        for row in bbx:
+            if row['file']==str(index+1):
+                xmin=int(row['xmin'])
+                ymin=int(row['ymin'])
+                xmax=int(row['xmax'])
+                ymax=int(row['ymax'])
+                label=int(row['label'])
+                bbx_1.append([xmin,ymin,xmax,ymax])
+                label_1.append(label)'''
+        
+        
+    with open(path+'Tracking/2/annotations.csv') as f:
+        bbx = csv.DictReader(f)
+        for row in bbx:
+            if row['file']==str(index+1):
+                xmin=int(row['xmin']) 
+                ymin=int(row['ymin'])
+                xmax=int(row['xmax'])
+                ymax=int(row['ymax'])
+                label=int(row['label'])
+                bbx_2.append([xmin,ymin,xmax,ymax])
+                label_2.append(label)
+                
+    with open(path+'Tracking/3/annotations.csv') as f:
+        bbx = csv.DictReader(f)
+        for row in bbx:
+            if row['file']==str(index+1):
+                xmin=int(row['xmin'])
+                ymin=int(row['ymin'])
+                xmax=int(row['xmax'])
+                ymax=int(row['ymax'])
+                label=int(row['label'])
+                bbx_3.append([xmin,ymin,xmax,ymax])
+                label_3.append(label)
+   
+    
+    #num_1=label_1
+    num_2=label_2
+    num_3=label_3
+    
+    #print bbx_1
+    #print bbx_2
+    
+    
+    if len(bbx_3)!=obj[0]  or len(bbx_2)!=obj[1]:
+        if len(bbx_3)>=len(bbx_2):
+            matching=Matching(img3,img2,bbx_3,bbx_2)
+        else:
+            matching=Matching(img2,img3,bbx_2,bbx_3)
+        
+    for i in range(len(matching)):
+        num_2[i]=label_3[matching[i][0]]
+        obj=[len(bbx_3),len(bbx_2)]
+        
+    
+    '''if len(bbx_3)!=obj[0]  or len(bbx_1)!=obj[1]:
+        if len(bbx_3)>=len(bbx_1):
+            matching=Matching(img3,img1,bbx_3,bbx_1)
+        else:
+            matching=Matching(img1,img3,bbx_1,bbx_3)
+        
+    for i in range(len(matching)):
+        num_1[i]=label_3[matching[i][0]]
+        obj=[len(bbx_3),len(bbx_1)]'''
+        
+    '''for i in range(len(bbx_1)):
+        rect=bbx_1[i]
+        cv2.rectangle(img1,(rect[0],rect[1]),(rect[2],rect[3]),(0,0,255),3)            
+        cv2.putText(img1,'Equipment '+str(num_1[i]), (rect[0],rect[1]-5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255),2)
+    cv2.imwrite(path+'result/1/'+str(index)+'.jpg',img1)'''
+    for i in range(len(bbx_2)):
+        rect=bbx_2[i]
+        cv2.rectangle(img2,(rect[0],rect[1]),(rect[2],rect[3]),(0,0,255),3)    
+        cv2.putText(img2,'Equipment '+str(num_2[i]), (rect[0],rect[1]-5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255),2)
+    cv2.imwrite(path+'result/2/'+str(index)+'.jpg',img2)
+    for i in range(len(bbx_3)):
+        rect=bbx_3[i]
+        cv2.rectangle(img3,(rect[0],rect[1]),(rect[2],rect[3]),(0,0,255),3)
+        cv2.putText(img3,'Equipment '+str(num_3[i]), (rect[0],rect[1]-5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255),2)
+    cv2.imwrite(path+'result/3/'+str(index)+'.jpg',img3)
+                
